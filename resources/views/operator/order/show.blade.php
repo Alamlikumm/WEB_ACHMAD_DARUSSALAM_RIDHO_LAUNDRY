@@ -2,6 +2,18 @@
 @section('title', 'Detail Transaksi')
 
 @section('content')
+    {{-- Header Struk saat dicetak --}}
+    <div class="row align-items-center mb-4 pb-3 border-bottom border-2 border-dark print-header-logo" style="display: none;">
+        <div class="col-6 text-start">
+            <img src="{{ asset('darussalam_logo.png') }}" alt="Darussalam Logo" style="height: 90px; border-radius: 4px; object-fit: contain;">
+        </div>
+        <div class="col-6 text-end">
+            <h4 class="mb-1 fw-bold text-dark" style="color: #000000 !important; font-weight: 800;">Darussalam Laundry</h4>
+            <p class="mb-0 text-muted" style="font-size: 13px; color: #444444 !important;">Layanan Laundry Bersih, Cepat, dan Wangi</p>
+            <p class="mb-0 text-muted" style="font-size: 12px; color: #555555 !important;">Telp: 0812-1007-8290 | Jakarta, Indonesia</p>
+        </div>
+    </div>
+
     <div class="row g-4">
         {{-- Info Order --}}
         <div class="col-md-5">
@@ -15,15 +27,15 @@
                     </tr>
                     <tr>
                         <td style="padding: 8px 0; color: var(--text-secondary);">Pelanggan</td>
-                        <td style="padding: 8px 0;">{{ $order->customer->customer_name }}</td>
+                        <td style="padding: 8px 0;">{{ $order->customer?->customer_name ?? '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding: 8px 0; color: var(--text-secondary);">Telepon</td>
-                        <td style="padding: 8px 0;">{{ $order->customer->phone }}</td>
+                        <td style="padding: 8px 0;">{{ $order->customer?->phone ?? '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding: 8px 0; color: var(--text-secondary);">Tanggal Order</td>
-                        <td style="padding: 8px 0;">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
+                        <td style="padding: 8px 0;">{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y H:i') }}</td>
                     </tr>
                     <tr>
                         <td style="padding: 8px 0; color: var(--text-secondary);">Estimasi Selesai</td>
@@ -47,8 +59,18 @@
 
                 <table style="width: 100%;">
                     <tr>
-                        <td style="padding: 6px 0; color: var(--text-secondary);">Total</td>
-                        <td style="padding: 6px 0; font-weight: 700; font-size: 20px; color: #4ade80;">Rp
+                        <td style="padding: 6px 0; color: var(--text-secondary);">Subtotal</td>
+                        <td style="padding: 6px 0; font-weight: 600;">Rp
+                            {{ number_format($order->total - $order->tax, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 0; color: var(--text-secondary);">Tax ({{ $order->tax_rate }}%)</td>
+                        <td style="padding: 6px 0; font-weight: 600; color: #fbbf24;">Rp
+                            {{ number_format($order->tax, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 0; color: var(--text-secondary);">Total Akhir</td>
+                        <td style="padding: 6px 0; font-weight: 700; font-size: 20px; color: #198754;">Rp
                             {{ number_format($order->total, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
@@ -107,48 +129,5 @@
         </div>
     </div>
 
-    @push('styles')
-        <style>
-            @media print {
 
-                .sidebar,
-                .topbar,
-                .no-print {
-                    display: none !important;
-                }
-
-                .main-content {
-                    margin: 0 !important;
-                    padding: 10px !important;
-                }
-
-                .content-card {
-                    box-shadow: none !important;
-                    border: 1px solid #ccc !important;
-                    background: white !important;
-                    color: black !important;
-                    margin-bottom: 20px;
-                }
-
-                body {
-                    background: white !important;
-                    color: black !important;
-                }
-
-                .table-dark-custom {
-                    color: black !important;
-                }
-
-                h5,
-                td,
-                span {
-                    color: black !important;
-                }
-
-                .badge-status {
-                    border: 1px solid black;
-                }
-            }
-        </style>
-    @endpush
 @endsection

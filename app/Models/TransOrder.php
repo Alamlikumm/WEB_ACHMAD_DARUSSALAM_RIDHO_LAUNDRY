@@ -20,6 +20,8 @@ class TransOrder extends Model
         'order_pay',
         'order_change',
         'total',
+        'tax',
+        'tax_rate',
     ];
 
     // Relasi: Order milik 1 Customer

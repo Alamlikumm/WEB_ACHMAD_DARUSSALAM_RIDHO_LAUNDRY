@@ -24,11 +24,19 @@ class PickupController extends Controller
             return redirect()->back()->with('error', 'Order ini sudah diambil sebelumnya.');
         }
 
-        // Update status order
-        $order->update([
+        $updateData = [
             'order_status'   => 1,
             'order_end_date' => now()->toDateString(),
-        ]);
+        ];
+
+        // Jika pembayaran awal kurang dari total tagihan, otomatis tandai lunas
+        if ($order->order_pay < $order->total) {
+            $updateData['order_pay'] = $order->total;
+            $updateData['order_change'] = 0;
+        }
+
+        // Update status order dan pembayaran
+        $order->update($updateData);
 
         // Buat record pickup
         TransLaundryPickup::create([

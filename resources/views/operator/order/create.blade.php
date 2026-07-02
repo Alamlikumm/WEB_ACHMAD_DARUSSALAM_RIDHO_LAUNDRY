@@ -21,11 +21,11 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label-dark">Tanggal Order</label>
-                    <input type="date" name="order_date" class="form-control-dark" value="{{ date('Y-m-d') }}" required>
+                    <input type="date" name="order_date" class="form-control-dark" value="{{ date('Y-m-d') }}" min="{{ date('Y-m-d') }}" id="orderDateInput" required>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label-dark">Estimasi Selesai</label>
-                    <input type="date" name="order_end_date" class="form-control-dark">
+                    <input type="date" name="order_end_date" class="form-control-dark" min="{{ date('Y-m-d') }}" id="orderEndDateInput">
                 </div>
             </div>
         </div>
@@ -80,22 +80,37 @@
         <div class="content-card">
             <h5 style="margin-bottom: 20px;"><i class="fas fa-money-bill-wave" style="color: var(--accent);"></i>
                 &nbsp;Pembayaran</h5>
-            <div class="row g-3 align-items-end">
+            <div class="row g-3 align-items-end mb-4">
                 <div class="col-md-3">
-                    <label class="form-label-dark">Total</label>
-                    <div style="font-size: 28px; font-weight: 700; color: #4ade80;" id="grandTotal">Rp 0</div>
-                    <input type="hidden" name="grand_total" id="grandTotalInput" value="0">
+                    <label class="form-label-dark">Subtotal</label>
+                    <div style="font-size: 20px; font-weight: 600; color: #ffffff;" id="orderSubtotal">Rp 0</div>
                 </div>
                 <div class="col-md-3">
+                    <label class="form-label-dark">Tax (%)</label>
+                    <input type="number" name="tax_rate" class="form-control-dark" id="taxRate" oninput="calcGrandTotal()"
+                        value="10" min="0" max="100" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-dark">Tax (Amount)</label>
+                    <div style="font-size: 20px; font-weight: 600; color: #fbbf24;" id="orderTax">Rp 0</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-dark">Total Akhir</label>
+                    <div style="font-size: 24px; font-weight: 700; color: #198754;" id="grandTotal">Rp 0</div>
+                    <input type="hidden" name="grand_total" id="grandTotalInput" value="0">
+                </div>
+            </div>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
                     <label class="form-label-dark">Bayar</label>
                     <input type="number" name="order_pay" class="form-control-dark" id="orderPay" oninput="calcChange()"
                         placeholder="0">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label-dark">Kembalian</label>
                     <div style="font-size: 22px; font-weight: 600; color: #fbbf24;" id="orderChange">Rp 0</div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <button type="submit" class="btn-accent" style="width: 100%; padding: 14px; font-size: 15px;">
                         <i class="fas fa-save"></i> Simpan Transaksi
                     </button>
@@ -168,11 +183,19 @@
             }
 
             function calcGrandTotal() {
-                let total = 0;
+                let subtotal = 0;
                 document.querySelectorAll('.subtotal-display').forEach(el => {
                     const val = el.textContent.replace(/[^0-9]/g, '');
-                    total += parseInt(val) || 0;
+                    subtotal += parseInt(val) || 0;
                 });
+                
+                const taxRateInput = document.getElementById('taxRate');
+                const taxRate = parseFloat(taxRateInput.value) || 0;
+                const taxAmount = Math.round(subtotal * (taxRate / 100));
+                const total = subtotal + taxAmount;
+
+                document.getElementById('orderSubtotal').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+                document.getElementById('orderTax').textContent = 'Rp ' + taxAmount.toLocaleString('id-ID');
                 document.getElementById('grandTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
                 document.getElementById('grandTotalInput').value = total;
                 calcChange();
@@ -184,6 +207,15 @@
                 const change = pay - total;
                 document.getElementById('orderChange').textContent = 'Rp ' + (change > 0 ? change : 0).toLocaleString('id-ID');
             }
+
+            // Prevent selecting a completed date before the start date
+            document.getElementById('orderDateInput').addEventListener('change', function() {
+                const endDateInput = document.getElementById('orderEndDateInput');
+                endDateInput.min = this.value;
+                if (endDateInput.value && endDateInput.value < this.value) {
+                    endDateInput.value = this.value;
+                }
+            });
         </script>
     @endpush
 @endsection

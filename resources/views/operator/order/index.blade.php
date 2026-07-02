@@ -28,7 +28,7 @@
                         <tr>
                             <td>{{ $i + 1 }}</td>
                             <td><strong>{{ $o->order_code }}</strong></td>
-                            <td>{{ $o->customer->customer_name }}</td>
+                            <td>{{ $o->customer?->customer_name ?? '-' }}</td>
                             <td>{{ \Carbon\Carbon::parse($o->order_date)->format('d/m/Y') }}</td>
                             <td>Rp {{ number_format($o->total, 0, ',', '.') }}</td>
                             <td>
@@ -39,9 +39,21 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('operator.order.show', $o->id) }}" class="btn-accent btn-sm-custom">
-                                    <i class="fas fa-eye"></i> Detail
-                                </a>
+                                <div class="d-flex align-items-center gap-1">
+                                    <a href="{{ route('operator.order.show', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #10b981;">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                    <a href="{{ route('operator.order.edit', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #f59e0b;">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <button type="button" onclick="confirmDelete('delete-form-{{ $o->id }}')" class="btn-accent btn-sm-custom btn-danger-custom" style="background: #ef4444;">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                    <form id="delete-form-{{ $o->id }}" action="{{ route('operator.order.destroy', $o->id) }}" method="POST" style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

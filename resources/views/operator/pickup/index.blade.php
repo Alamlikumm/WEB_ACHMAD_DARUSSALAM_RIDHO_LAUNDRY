@@ -24,7 +24,7 @@
                         <tr>
                             <td>{{ $i + 1 }}</td>
                             <td><strong>{{ $o->order_code }}</strong></td>
-                            <td>{{ $o->customer->customer_name }}</td>
+                            <td>{{ $o->customer?->customer_name ?? '-' }}</td>
                             <td>{{ \Carbon\Carbon::parse($o->order_date)->format('d/m/Y') }}</td>
                             <td>Rp {{ number_format($o->total, 0, ',', '.') }}</td>
                             <td>
@@ -35,24 +35,39 @@
                                 @endif
                             </td>
                             <td>
-                                @if ($o->order_status == 0)
-                                    <button type="button"
-                                        onclick="confirmPickup({{ $o->id }}, '{{ $o->order_code }}')"
-                                        class="btn-accent btn-sm-custom btn-success-custom">
-                                        <i class="fas fa-check"></i> Proses Ambil
-                                    </button>
+                                <div class="d-flex align-items-center gap-1">
+                                    @if ($o->order_status == 0)
+                                        <button type="button"
+                                            onclick="confirmPickup({{ $o->id }}, '{{ $o->order_code }}')"
+                                            class="btn-accent btn-sm-custom btn-success-custom">
+                                            <i class="fas fa-check"></i> Proses Ambil
+                                        </button>
 
-                                    <form id="pickup-form-{{ $o->id }}"
-                                        action="{{ route('operator.pickup.process', $o->id) }}" method="POST"
-                                        style="display:none;">
+                                        <form id="pickup-form-{{ $o->id }}"
+                                            action="{{ route('operator.pickup.process', $o->id) }}" method="POST"
+                                            style="display:none;">
+                                            @csrf
+                                            <input type="hidden" name="notes" id="pickup-notes-{{ $o->id }}">
+                                        </form>
+                                    @else
+                                        <a href="{{ route('operator.order.invoice', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #0ea5e9;">
+                                            <i class="fas fa-file-invoice"></i> Cetak Invoice
+                                        </a>
+                                    @endif
+
+                                    <a href="{{ route('operator.order.edit', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #f59e0b;">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+
+                                    <button type="button" onclick="confirmDelete('delete-form-{{ $o->id }}')" class="btn-accent btn-sm-custom btn-danger-custom" style="background: #ef4444;">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                    
+                                    <form id="delete-form-{{ $o->id }}" action="{{ route('operator.order.destroy', $o->id) }}" method="POST" style="display: none;">
                                         @csrf
-                                        <input type="hidden" name="notes" id="pickup-notes-{{ $o->id }}">
+                                        @method('DELETE')
                                     </form>
-                                @else
-                                    <span style="color: var(--text-secondary); font-size: 13px;">
-                                        <i class="fas fa-check-double"></i> Selesai
-                                    </span>
-                                @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

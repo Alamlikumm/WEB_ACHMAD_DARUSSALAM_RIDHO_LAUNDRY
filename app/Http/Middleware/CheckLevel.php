@@ -20,6 +20,11 @@ class CheckLevel
 
         $userLevel = auth()->user()->id_level;
 
+        // Admin (Level 1) can access everything
+        if ($userLevel == 1) {
+            return $next($request);
+        }
+
         if (!in_array($userLevel, $levels)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }

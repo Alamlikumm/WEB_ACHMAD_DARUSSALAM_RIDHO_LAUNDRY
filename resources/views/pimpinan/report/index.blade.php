@@ -2,7 +2,19 @@
 @section('title', 'Laporan Penjualan')
 
 @section('content')
-    <div class="content-card mb-4">
+    {{-- Header Laporan saat dicetak --}}
+    <div class="row align-items-center mb-4 pb-3 border-bottom border-2 border-dark print-header-logo" style="display: none;">
+        <div class="col-6 text-start">
+            <img src="{{ asset('darussalam_logo.png') }}" alt="Darussalam Logo" style="height: 90px; border-radius: 4px; object-fit: contain;">
+        </div>
+        <div class="col-6 text-end">
+            <h4 class="mb-1 fw-bold text-dark" style="color: #000000 !important; font-weight: 800;">Darussalam Laundry</h4>
+            <p class="mb-0 text-muted" style="font-size: 13px; color: #444444 !important;">Layanan Laundry Bersih, Cepat, dan Wangi</p>
+            <p class="mb-0 text-muted" style="font-size: 12px; color: #555555 !important;">Telp: 0812-1007-8290 | Jakarta, Indonesia</p>
+        </div>
+    </div>
+
+    <div class="content-card mb-4 no-print">
         <h5 style="margin-bottom: 20px;"><i class="fas fa-filter" style="color: var(--accent);"></i> &nbsp;Filter Laporan</h5>
 
         <form action="{{ route('pimpinan.report.index') }}" method="GET">
@@ -58,7 +70,7 @@
                         <tr>
                             <td>{{ $i + 1 }}</td>
                             <td><strong>{{ $o->order_code }}</strong></td>
-                            <td>{{ $o->customer->customer_name ?? '-' }}</td>
+                            <td>{{ $o->customer?->customer_name ?? '-' }}</td>
                             <td>{{ \Carbon\Carbon::parse($o->order_date)->format('d/m/Y') }}</td>
                             <td>
                                 @if ($o->order_status == 0)
