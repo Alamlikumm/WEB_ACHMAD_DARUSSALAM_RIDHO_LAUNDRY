@@ -43,6 +43,7 @@
                                     <a href="{{ route('operator.order.show', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #10b981;">
                                         <i class="fas fa-eye"></i> Detail
                                     </a>
+                                    @if(auth()->user()->id_level == 1)
                                     <a href="{{ route('operator.order.edit', $o->id) }}" class="btn-accent btn-sm-custom" style="background: #f59e0b;">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
@@ -53,6 +54,7 @@
                                         @csrf
                                         @method('DELETE')
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -30,12 +30,16 @@ Route::middleware('checkLevel:2')->prefix('operator')->name('operator.')->group(
     Route::get('order/create', [\App\Http\Controllers\Operator\OrderController::class, 'create'])->name('order.create');
     Route::post('order', [\App\Http\Controllers\Operator\OrderController::class, 'store'])->name('order.store');
     Route::get('order/{order}', [\App\Http\Controllers\Operator\OrderController::class, 'show'])->name('order.show');
-    Route::get('order/{order}/edit', [\App\Http\Controllers\Operator\OrderController::class, 'edit'])->name('order.edit');
-    Route::put('order/{order}', [\App\Http\Controllers\Operator\OrderController::class, 'update'])->name('order.update');
-    Route::delete('order/{order}', [\App\Http\Controllers\Operator\OrderController::class, 'destroy'])->name('order.destroy');
     Route::get('order/{order}/invoice', [\App\Http\Controllers\Operator\OrderController::class, 'invoice'])->name('order.invoice');
     Route::get('pickup', [\App\Http\Controllers\Operator\PickupController::class, 'index'])->name('pickup.index');
     Route::post('pickup/{order}/process', [\App\Http\Controllers\Operator\PickupController::class, 'process'])->name('pickup.process');
+
+    // Hanya Admin (Level 1) yang bisa mengakses menu edit & delete
+    Route::middleware('checkLevel:1')->group(function () {
+        Route::get('order/{order}/edit', [\App\Http\Controllers\Operator\OrderController::class, 'edit'])->name('order.edit');
+        Route::put('order/{order}', [\App\Http\Controllers\Operator\OrderController::class, 'update'])->name('order.update');
+        Route::delete('order/{order}', [\App\Http\Controllers\Operator\OrderController::class, 'destroy'])->name('order.destroy');
+    });
 });
 
     // Pimpinan only (level 3) - Laporan
