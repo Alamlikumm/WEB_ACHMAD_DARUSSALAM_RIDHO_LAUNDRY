@@ -24,6 +24,10 @@
             "dest": "/public/template/$1"
         },
         {
+            "src": "/(.*\.(?:png|jpg|jpeg|gif|svg|ico))$",
+            "dest": "/public/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
