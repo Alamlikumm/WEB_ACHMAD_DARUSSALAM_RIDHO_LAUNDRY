@@ -10,6 +10,15 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/test-db', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return 'Koneksi Database Berhasil! Nama Database: ' . \Illuminate\Support\Facades\DB::connection()->getDatabaseName();
+    } catch (\Exception $e) {
+        return 'Koneksi Database GAGAL. Error: ' . $e->getMessage();
+    }
+});
+
 // ===================== PROTECTED ROUTES =====================
 Route::middleware(['auth'])->group(function () {
 
